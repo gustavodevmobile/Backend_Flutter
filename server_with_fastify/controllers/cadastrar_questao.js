@@ -42,38 +42,3 @@ export const cadastrar_questao = async function (req, reply) {
   }
 };
 
-//   fastify.post(
-//     "/cadastrar",
-//     { preHandler: upload.single("image") },
-//     async function (req, reply) {
-//       let image;
-//       if (req.file.filename == undefined) {
-//         req.body.image = "sem imagem";
-//         image = req.body.image;
-//       } else {
-//         image = fs.readFileSync("./images/" + req.file.filename);
-//       }
-
-//       try {
-//         await Database.create({
-//           elementarySchool: req.body.elementarySchool,
-//           schoolYear: req.body.schoolYear,
-//           displice: req.body.displice,
-//           subject: req.body.subject,
-//           question: req.body.question,
-//           image: image,
-//           nameImageDir: req.file.filename,
-//           answer: req.body.answer,
-//           alternativeA: req.body.altA,
-//           alternativeB: req.body.altB,
-//           alternativeC: req.body.altC,
-//           alternativeD: req.body.altD,
-//         });
-//         console.log("Cadastrado com sucesso");
-//         return reply.redirect("/");
-//       } catch (err) {
-//         console.log(err);
-//         return reply.send(err);
-//       }
-//     }
-//   );

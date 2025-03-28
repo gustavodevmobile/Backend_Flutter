@@ -1,22 +1,9 @@
-// import Fastify from "fastify";
-// import fastifyView from "@fastify/view";
-// import fastifyPostgres from "@fastify/postgres";
-// import fastifyFormbody from "@fastify/formbody";
-// import handlebars from "handlebars";
-// import fastifyMultipart from "@fastify/multipart";
+
 import multer from "fastify-multer";
 import fs from "fs";
 import "dotenv/config";
 import Database from "../database/database.js";
-//import path from "path";
-//import jsdom from "jsdom";
 
-//import { and, where } from "sequelize";
-//import { mapValueFieldNames } from "sequelize/lib/utils";
-//import { and, where } from "sequelize";
-
-// const { JSDOM } = jsdom;
-// const upload = multer({ dest: "images/" });
 let imageUpdate = '';
 let imageBufferUpdated = '';
 let nameImageDirUpdated  = '';

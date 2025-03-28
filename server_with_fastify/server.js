@@ -1,13 +1,10 @@
 import Fastify from "fastify";
 import fastifyView from "@fastify/view";
 import fastifyPostgres from "@fastify/postgres";
-//import fastifyFormbody from "@fastify/formbody";
 import handlebars from "handlebars";
 import fastifyMultipart from "@fastify/multipart";
-
 import "dotenv/config";
 import Database from "./database/database.js";
-
 import routes_matematica from "./routes/routes_matematica/routes.js";
 import routes_portugues from "./routes/routes_portugues/routes.js";
 import routes_geografia from "./routes/routes_geografia/routes.js";
