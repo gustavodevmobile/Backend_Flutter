@@ -3,8 +3,8 @@ import "dotenv/config";
 import Database from "../database/database.js";
 
 export const deletar = (req, reply) => {
-  const { id, nameImageDir } = req.params;
-  if (!id || !nameImageDir) {
+  const {id} = req.params;
+  if (!id) {
     return reply.status(400).send("Parâmetros inválidos");
   }
   try {

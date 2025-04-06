@@ -1,24 +1,26 @@
-
 import multer from "fastify-multer";
 import fs from "fs";
 import "dotenv/config";
 import Database from "../database/database.js";
+import { fileURLToPath } from "url";
+import path from "path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-let imageUpdate = '';
-let imageBufferUpdated = '';
-let nameImageDirUpdated  = '';
-let nameImageDir  = '';
-let elementarySchoolUpdated  = '';
-let schoolYearUpdated  = '';
-let displiceUpdated  = '';
-let questionUpdated  = '';
-let subjetcUpdated  = '';
-let answerUpdated  = '';
-let alternativeAUpdated  = '';
-let alternativeBUpdated  = '';
-let alternativeCUpdated  = '';
-let alternativeDUpdated  = '';
-
+let imageUpdate = "";
+let imageBufferUpdated = "";
+let nameImageDirUpdated = "";
+let nameImageDir = "";
+let elementarySchoolUpdated = "";
+let schoolYearUpdated = "";
+let displiceUpdated = "";
+let questionUpdated = "";
+let subjetcUpdated = "";
+let answerUpdated = "";
+let alternativeAUpdated = "";
+let alternativeBUpdated = "";
+let alternativeCUpdated = "";
+let alternativeDUpdated = "";
 
 export const editar_questao = async (req, reply) => {
   try {
@@ -31,7 +33,8 @@ export const editar_questao = async (req, reply) => {
       image = imageBufferUpdated;
       nameImageUpdated = nameImageDirUpdated;
 
-      fs.readdir("./images", { withFileTypes: true }, (err, files) => {
+      try {
+        const files = fs.readdir("./images", { withFileTypes: true });
         for (var file of files) {
           if (file.name == nameImageDir) {
             fs.rename(
@@ -40,21 +43,38 @@ export const editar_questao = async (req, reply) => {
               (err) => {
                 if (err) {
                   console.log("Erro ao deletar imagem no diretório:", err);
-                  console.log("Image Atualizada!");
                 }
               }
             );
+            console.log("Image Atualizada com sucesso!");
           }
         }
-      });
-      fs.readFileSync("./images/" + nameImageDirUpdated);
+      } catch (error) {
+        console.error("Erro ao acessar o diretório:", error);
+      }
+      const filePath = path.resolve(
+        __dirname,
+        "./images/" + nameImageDirUpdated
+      );
+      try {
+        //fs.readFileSync(filePath);
+        const stats = fs.lstatSync(filePath);
+        if (stats.isFile()) {
+          fs.readFileSync(filePath);
+          console.log("Imagem salva com sucesso!");
+        } else {
+          console.error(`${filePath} não é um arquivo.`);
+        }
+      } catch (err) {
+        console.error(`Erro ao acessar o arquivo ${filePath}:`, err);
+      }
+      //fs.readFileSync("./images/" + nameImageDirUpdated);
     } else {
-      //if (req.file.filename == undefined && imageUpdate == undefined)
       req.body.image = imageBuffer;
       image = req.body.image;
       nameImageUpdated = nameImageDir;
     }
-    Database.update(
+    await Database.update(
       {
         elementarySchool: req.body.elementarySchool,
         schoolYear: req.body.schoolYear,
@@ -79,12 +99,25 @@ export const editar_questao = async (req, reply) => {
 };
 
 export const editar_upload_image = async (req, reply) => {
-  try {
-    imageBufferUpdated = fs.readFileSync("./images/" + req.file.filename);
-    const imageBase64 = imageBufferUpdated.toString("base64");
-    imageUpdate = imageBase64;
+  //console.log(req.file.filename);
 
-    nameImageDirUpdated = req.file.filename;
+  try {
+    const filePath = path.resolve(__dirname, "../images/" + req.file.filename);
+    if (req.file.filename != undefined) {
+      const imageBufferUpdated = fs.readFileSync(filePath);
+      const imageBase64 = imageBufferUpdated.toString("base64");
+      imageUpdate = imageBase64;
+      nameImageDirUpdated = req.file.filename;
+      console.log(nameImageDirUpdated);
+    } else {
+      console.error("Arquivo não encontrado:", filePath);
+    }
+
+    // imageBufferUpdated = fs.readFileSync("../images/" + req.file.filename);
+    // const imageBase64 = imageBufferUpdated.toString("base64");
+    // imageUpdate = imageBase64;
+
+    // nameImageDirUpdated = req.file.filename;
 
     reply.redirect(`/editar-questao/${req.params.id}`);
   } catch (err) {
@@ -95,8 +128,8 @@ export const editar_upload_image = async (req, reply) => {
 
 export const screen_editar_questao = (req, reply) => {
   try {
-    //console.log('req.body.question', req.body.question);
     Database.findByPk(req.params.id).then((result) => {
+      //console.group(result.nameImageDir);
       nameImageDir = result["dataValues"]["nameImageDir"];
       //console.log('nameImageDir', nameImageDir);
       const imageBase64 = result["dataValues"]["image"].toString("base64");
@@ -104,98 +137,26 @@ export const screen_editar_questao = (req, reply) => {
       questionUpdated = result["dataValues"]["question"];
       reply.render("templates/editar", {
         id: result.id,
-        elementarySchool:
-          elementarySchoolUpdated != undefined
-            ? elementarySchoolUpdated
-            : result.elementarySchool,
-        schoolYear:
-          schoolYearUpdated != undefined
-            ? schoolYearUpdated
-            : result.schoolYear,
-        displice:
-          displiceUpdated != undefined ? displiceUpdated : result.displice,
-        subject: subjetcUpdated != undefined ? subjetcUpdated : result.subject,
+        elementarySchool: result.elementarySchool,
+
+        schoolYear: result.schoolYear,
+        displice: result.displice,
+        subject: result.subject,
         question: result.question,
-        image:
-          imageUpdate != undefined
-            ? `data:image/jpeg;base64,${imageUpdate}`
-            : `data:image/jpeg;base64,${result.image}`,
-        nameImageDir:
-          nameImageDirUpdated != undefined
-            ? nameImageDirUpdated
-            : result.nameImageDir,
-        answer: answerUpdated != undefined ? answerUpdated : result.answer,
-        alternativeA:
-          alternativeAUpdated != undefined
-            ? alternativeAUpdated
-            : result.alternativeA,
-        alternativeB:
-          alternativeBUpdated != undefined
-            ? alternativeBUpdated
-            : result.alternativeB,
-        alternativeC:
-          alternativeCUpdated != undefined
-            ? alternativeCUpdated
-            : result.alternativeC,
-        alternativeD:
-          alternativeDUpdated != undefined
-            ? alternativeDUpdated
-            : result.alternativeD,
+        image: 
+        //`data:image/jpeg;base64,${result.image}`,
+        imageUpdate
+          ?? `data:image/jpeg;base64,${result.image}`,
+        nameImageDir: result.nameImageDir,
+        answer: result.answer,
+        alternativeA: result.alternativeA,
+        alternativeB: result.alternativeB,
+        alternativeC: result.alternativeC,
+        alternativeD: result.alternativeD,
       });
     });
-    // fs.unlinkSync("./images/" + req.file.filename, (err) => {
-    //   if (err) {
-    //     console.log("Erro ao deletar imagem no diretório:", err);
-    //   }
-    // });
   } catch (err) {
     console.log(err);
     return reply.send(err);
   }
 };
-
-
-// import fs from "fs";
-// import "dotenv/config";
-// import Database from "../database/database.js";
-
-// const updateImage = (oldName, newName) => {
-//   try {
-//     fs.renameSync(`./images/${oldName}`, `./images/${newName}`);
-//     console.log("Imagem atualizada com sucesso!");
-//   } catch (err) {
-//     console.error("Erro ao renomear imagem:", err);
-//   }
-// };
-
-// export const editar_questao = async (req, reply) => {
-//   try {
-//     const result = await Database.findByPk(req.body.id);
-//     if (!result) {
-//       return reply.status(404).send({ error: "Questão não encontrada" });
-//     }
-
-//     const { image: currentImage, nameImageDir: currentName } = result.dataValues;
-//     const newImage = req.file ? fs.readFileSync(`./images/${req.file.filename}`) : currentImage;
-//     const newName = req.file ? req.file.filename : currentName;
-
-//     if (req.file) {
-//       updateImage(currentName, newName);
-//     }
-
-//     await Database.update(
-//       {
-//         ...req.body,
-//         image: newImage,
-//         nameImageDir: newName,
-//       },
-//       { where: { id: req.body.id } }
-//     );
-
-//     reply.redirect("/");
-//   } catch (err) {
-//     console.error(err);
-//     return reply.status(500).send({ error: "Erro ao editar questão" });
-//   }
-// };
-
