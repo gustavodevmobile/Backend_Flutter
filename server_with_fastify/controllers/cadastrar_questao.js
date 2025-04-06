@@ -9,7 +9,7 @@ export const screen_cadastrar_questao = async (req, reply) => {
 export const cadastrar_questao = async function (req, reply) {
   let image;
   let filename;
-  //req.file.filename == undefined
+  console.log("req.file.filename", req.file.filename);
   if (!req.file || !req.file.filename) {
     req.body.image = "sem imagem";
     image = req.body.image;
