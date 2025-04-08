@@ -13,7 +13,7 @@ const renamePath = async (oldPath, newPath) => {
     await fs.rename(oldPath, newPath);
   } catch (error) {
     console.log("Erro ao renomar arquivo:", error.message);
-    throw error; 
+    throw error;
   }
 };
 
@@ -23,7 +23,7 @@ const updateImage = async (newPath) => {
     return newImage;
   } catch (error) {
     console.log("Erro ao atualizar arquivo:", error.message);
-    throw error; 
+    throw error;
   }
 };
 
@@ -37,7 +37,6 @@ export const editar_questao = async (req, reply) => {
     const oldPath = path.resolve(__dirname, "../images/" + nameImageDir);
     const newPath = path.resolve(__dirname, "../images/" + req.file.filename);
 
-    console.log("nameImageDir", nameImageDir);
     if (req.file.filename && req.file) {
       try {
         await fs.access(newPath);
@@ -47,18 +46,16 @@ export const editar_questao = async (req, reply) => {
       } catch (error) {
         console.error("Erro ao acessar o diretório:", error);
       }
-      try{
+      try {
         await fs.access(oldPath);
         await renamePath(oldPath, newPath);
         console.log("Arquivo renomeado com sucesso!", oldPath);
-      }catch (error) {
+      } catch (error) {
         console.log("Erro ao renomear arquivo:", error.message);
       }
-      
     } else {
       newImage = imageBuffer;
       nameImageDirUpdated = nameImageDir;
-      
     }
     await Database.update(
       {
@@ -67,7 +64,7 @@ export const editar_questao = async (req, reply) => {
         displice: req.body.displice,
         subject: req.body.subject,
         question: req.body.question,
-        image: newImage, 
+        image: newImage,
         nameImageDir: nameImageDirUpdated,
         answer: req.body.answer,
         alternativeA: req.body.altA,
