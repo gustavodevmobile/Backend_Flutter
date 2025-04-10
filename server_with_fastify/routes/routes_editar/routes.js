@@ -12,6 +12,8 @@ async function routes_editar(fastify, options) {
     { preHandler: upload.single("image") },
     screen_editar_questao
   );
+
+  
   fastify.post(
     "/editar",
     { preHandler: upload.single("imageUpdate") },
